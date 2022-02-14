@@ -44,7 +44,6 @@ def run1():
   global db,stable_db
   while True:
     wait(lambda: db != stable_db, timeout_seconds=None)
-    print("change\n")
     #start
     #start_time = time.time()
     open_again(data_key)
