@@ -33,7 +33,7 @@ def take_data(name):
         return test["value"]
 
 db = take_data(data_key)
-#stable_db = take_data(data_key)    
+stable_db = take_data(data_key)    
 ########def
 def open_again(name):
   global db,stable_db
