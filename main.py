@@ -24,34 +24,6 @@ number =[
   "0","1","2","3","4","5","6","7","8","9"
 ]
 
-def plus_money(uid,money):
-  db[uid]["h_all_time_transfer"] += money
-
-def minus_money(uid,money):
-  db[uid]["h_all_time_transfer"] -= money
-
-#chuyển khoản
-def money_ck(var):
-  i = 0
-  money = ""
-  while not var[i] in number and i<=len(var):
-    i = i + 1
-  while var[i] in number and i<=len(var):
-    money = money + var[i]
-    i = i + 1
-  return money  
-
-def to_user(var):
-  i = len(var) - 1
-  user = ""
-  while not var[i] in number and i>=0:
-    i = i - 1
-  while var[i] in number and i>=0:
-    user = var[i] + user
-    i = i - 1
-  return user  
-
-
 
 # start
 
