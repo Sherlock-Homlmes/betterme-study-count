@@ -50,6 +50,8 @@ def time_caculate(mem_id,mem_name):
 
 
   s_cal = (datetime2 - datetime1).seconds
+  
+  db[mem_id]["date"] = [now.year, now.month, now.day, now.hour, now.minute]
 
   #personal time
   m_user = db[mem_id]["m_all_time"]
