@@ -24,13 +24,45 @@ number =[
   "0","1","2","3","4","5","6","7","8","9"
 ]
 
-
 # start
 
 #start
 intents = discord.Intents().all()
 bot = commands.Bot(command_prefix=["m,","M,"], intents = intents)
 slash = SlashCommand(bot, sync_commands=True)
+
+def time_caculate(mem_id,mem_name):
+  mem_id = str(mem_id)
+
+  now = datetime.utcnow()
+  start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
+  stop_time = time(now.hour, now.minute)
+
+  date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
+  date2 = date(now.year, now.month, now.day)
+
+  datetime1 = datetime.combine(date1, start_time)
+  datetime2 = datetime.combine(date2, stop_time)
+
+  #time per day count
+  time_per_day(mem_id,datetime1,datetime2)
+  time_per_day("server_study_time",datetime1,datetime2)
+
+
+  s_cal = (datetime2 - datetime1).seconds
+
+  #personal time
+  m_user = db[mem_id]["m_all_time"]
+  db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
+
+  #all server time
+  m_sv = db["server_study_time"]["m_all_time"]
+  db["server_study_time"]["m_all_time"] = total_time(m_sv,s_cal)
+
+  db[mem_id]["name"] = mem_name
+
+  show = show_time(db[mem_id]["m_all_time"])
+  print(mem_name + " đã học "+show[0]+" giờ "+show[1]+" phút")    
 
 
 @bot.event
@@ -86,35 +118,7 @@ async def on_voice_state_update(member, member_before, member_after):
           "m_all_time":0
         }
       else:
-        now = datetime.utcnow()
-        start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
-        stop_time = time(now.hour, now.minute)
-
-        date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
-        date2 = date(now.year, now.month, now.day)
-
-        datetime1 = datetime.combine(date1, start_time)
-        datetime2 = datetime.combine(date2, stop_time)
-
-        time_per_day(mem_id,datetime1,datetime2)
-        time_per_day("server_study_time",datetime1,datetime2)
-
-        s_cal = (datetime2 - datetime1).seconds
-
-        #mới
-
-        #personal time
-        m_user = db[mem_id]["m_all_time"]
-        db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
-
-        #all server time
-        m_sv = db["server_study_time"]["m_all_time"]
-        db["server_study_time"]["m_all_time"] = total_time(m_sv,s_cal)
-
-        db[mem_id]["name"] = mem_name
-
-        show = show_time(db[mem_id]["m_all_time"])
-        print(member.name + " đã học "+show[0]+" giờ "+show[1]+" phút")    
+        time_caculate(mem_id,mem_name)  
 
 
 #var
@@ -133,6 +137,7 @@ guild_ids = [880360143768924210]
 async def _learn_time(ctx):
   member = ctx.author
   mem_id = str(member.id)
+  mem_name = member.name
   voice_state = member.voice
   if mem_id not in db.keys():
     db[mem_id] = {
@@ -141,33 +146,16 @@ async def _learn_time(ctx):
       "m_all_time":0
     }
   elif voice_state != None:
-    now = datetime.utcnow()
-    start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
-    stop_time = time(now.hour, now.minute)
-
-    date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
-    date2 = date(now.year, now.month, now.day)
-
-    datetime1 = datetime.combine(date1, start_time)
-    datetime2 = datetime.combine(date2, stop_time)
-    time_elapsed = datetime2 - datetime1
-
-    #mới
-    s_cal = time_elapsed.seconds
-
-    #personal time
-    m_user = db[mem_id]["m_all_time"]
-    db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
-
-    db[mem_id]["date"] = [now.year,now.month,now.day,now.hour,now.minute]
+    time_caculate(mem_id,mem_name)
 
   show1 = show_time(db[mem_id]["m_all_time"])
-  await ctx.send(member.name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
+  await ctx.send(mem_name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
 
 @bot.command(name="study_time",description="Kiểm tra số giờ đã học",)
 async def _study_time(ctx):
   member = ctx.author
   mem_id = str(member.id)
+  mem_name = member.name
   voice_state = member.voice
   if mem_id not in db.keys():
     db[mem_id] = {
@@ -176,35 +164,28 @@ async def _study_time(ctx):
       "m_all_time":0
     }
   elif voice_state != None:
-    now = datetime.utcnow()
-    start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
-    stop_time = time(now.hour, now.minute)
+    time_caculate(mem_id,mem_name)
 
-    date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
-    date2 = date(now.year, now.month, now.day)
+  show1 = show_time(db[mem_id]["m_all_time"])
+  await ctx.send(mem_name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
 
-    datetime1 = datetime.combine(date1, start_time)
-    datetime2 = datetime.combine(date2, stop_time)
-    time_elapsed = datetime2 - datetime1
-
-    #mới
-    s_cal = time_elapsed.seconds
-
-    #personal time
-    m_user = db[mem_id]["m_all_time"]
-    db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
-
-    db[mem_id]["date"] = [now.year,now.month,now.day,now.hour,now.minute]
-
-  show = show_time(db[mem_id]["m_all_time"])
-  await ctx.send(member.name + " đã học "+show[0]+" giờ "+show[1]+" phút")
 
 ###leader board
 @bot.command(name="leader_board",description="Leader board")
 async def _leader_board(ctx):
   board = leader_board()
   show = show_time(db["server_study_time"]["m_all_time"])
-  await ctx.send("Tổng số giờ học cả server: "+show[0]+" giờ,"+show[1]+" phút\n" + "1:"+str(db[board[1]]["name"])+"\n2:"+str(db[board[2]]["name"])+"\n3:"+str(db[board[3]]["name"])+"\n4:"+str(db[board[4]]["name"])+"\n5:"+str(db[board[5]]["name"]))
+
+  def number(mem_id,pos):
+    show = show_time(db[mem_id]["m_all_time"])
+    return str(pos)+": "+str(db[mem_id]["name"])+": "+str(show[0])+" giờ,"+str(show[1])+" phút"
+
+  lead_board =""
+  for i in range(1,11):
+    lead_board += "\n"+number(board[i],i)
+
+  await ctx.send("Tổng số giờ học cả server: "+show[0]+" giờ,"+show[1]+" phút\n" +lead_board)
+
 
 #study time
 @bot.command(name="server_time_data",description="Study data control")
@@ -226,6 +207,7 @@ async def _study_time(ctx):
 async def _learn_time(ctx:SlashContext):
   member = ctx.author
   mem_id = str(member.id)
+  mem_name = member.name
   voice_state = member.voice
   if mem_id not in db.keys():
     db[mem_id] = {
@@ -234,28 +216,10 @@ async def _learn_time(ctx:SlashContext):
       "m_all_time":0
     }
   elif voice_state != None:
-    now = datetime.utcnow()
-    start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
-    stop_time = time(now.hour, now.minute)
-
-    date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
-    date2 = date(now.year, now.month, now.day)
-
-    datetime1 = datetime.combine(date1, start_time)
-    datetime2 = datetime.combine(date2, stop_time)
-    time_elapsed = datetime2 - datetime1
-
-    #mới
-    s_cal = time_elapsed.seconds
-
-    #personal time
-    m_user = db[mem_id]["m_all_time"]
-    db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
-
-    db[mem_id]["date"] = [now.year,now.month,now.day,now.hour,now.minute]
+    time_caculate(mem_id,mem_name)
 
   show1 = show_time(db[mem_id]["m_all_time"])
-  await ctx.send(member.name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
+  await ctx.send(mem_name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
 
 @slash.slash(
   name="study_time",
@@ -265,6 +229,7 @@ async def _learn_time(ctx:SlashContext):
 async def _study_time(ctx:SlashContext):
   member = ctx.author
   mem_id = str(member.id)
+  mem_name = member.name
   voice_state = member.voice
   if mem_id not in db.keys():
     db[mem_id] = {
@@ -273,29 +238,10 @@ async def _study_time(ctx:SlashContext):
       "m_all_time":0
     }
   elif voice_state != None:
-    now = datetime.utcnow()
-    start_time = time(db[mem_id]["date"][3], db[mem_id]["date"][4])
-    stop_time = time(now.hour, now.minute)
+    time_caculate(mem_id,mem_name)
 
-    date1 = date(db[mem_id]["date"][0], db[mem_id]["date"][1], db[mem_id]["date"][2])
-    date2 = date(now.year, now.month, now.day)
-
-    datetime1 = datetime.combine(date1, start_time)
-    datetime2 = datetime.combine(date2, stop_time)
-    time_elapsed = datetime2 - datetime1
-
-    #mới
-    s_cal = time_elapsed.seconds
-
-    #personal time
-    m_user = db[mem_id]["m_all_time"]
-    db[mem_id]["m_all_time"] = total_time(m_user,s_cal)
-
-    db[mem_id]["date"] = [now.year,now.month,now.day,now.hour,now.minute]
-
-  show = show_time(db[mem_id]["m_all_time"])
-  await ctx.send(member.name + " đã học "+show[0]+" giờ "+show[1]+" phút")
-
+  show1 = show_time(db[mem_id]["m_all_time"])
+  await ctx.send(mem_name + " đã học "+show1[0]+" giờ "+show1[1]+" phút")
 ###leader board
 @slash.slash(
   name="leader_board",
@@ -305,7 +251,16 @@ async def _study_time(ctx:SlashContext):
 async def _leader_board(ctx:SlashContext):
   board = leader_board()
   show = show_time(db["server_study_time"]["m_all_time"])
-  await ctx.send("Tổng số giờ học cả server: "+show[0]+" giờ,"+show[1]+" phút\n" + "1:"+str(db[board[1]]["name"])+"\n2:"+str(db[board[2]]["name"])+"\n3:"+str(db[board[3]]["name"])+"\n4:"+str(db[board[4]]["name"])+"\n5:"+str(db[board[5]]["name"]))
+
+  def number(mem_id,pos):
+    show = show_time(db[mem_id]["m_all_time"])
+    return str(pos)+": "+str(db[mem_id]["name"])+": "+str(show[0])+" giờ,"+str(show[1])+" phút"
+
+  lead_board =""
+  for i in range(1,11):
+    lead_board += "\n"+number(board[i],i)
+
+  await ctx.send("Tổng số giờ học cả server: "+show[0]+" giờ,"+show[1]+" phút\n" +lead_board)
 
 #study time
 @slash.slash(
@@ -324,5 +279,5 @@ async def _study_time(ctx:SlashContext):
 
 load_dotenv()
 my_secret = os.environ['BOT_TOKEN']
-#bot.loop.create_task(time_per_day_data())
+###bot.loop.create_task(time_per_day_data())
 bot.run(my_secret)
