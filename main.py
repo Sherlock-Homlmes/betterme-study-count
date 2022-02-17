@@ -61,6 +61,7 @@ def time_caculate(mem_id,mem_name):
 
 
   db[mem_id]["date"] = [now.year, now.month, now.day,now.hour, now.minute]
+  db["server_study_time"]["date"] = [now.year, now.month, now.day,now.hour, now.minute]
   db[mem_id]["name"] = mem_name
 
   show = show_time(db[mem_id]["m_all_time"])
