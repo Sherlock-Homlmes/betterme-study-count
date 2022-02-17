@@ -50,8 +50,6 @@ def time_caculate(mem_id,mem_name):
 
 
   s_cal = (datetime2 - datetime1).seconds
-  
-  db[mem_id]["date"] = [now.year, now.month, now.day, now.hour, now.minute]
 
   #personal time
   m_user = db[mem_id]["m_all_time"]
@@ -61,6 +59,8 @@ def time_caculate(mem_id,mem_name):
   m_sv = db["server_study_time"]["m_all_time"]
   db["server_study_time"]["m_all_time"] = total_time(m_sv,s_cal)
 
+
+  db[mem_id]["date"] = [now.year, now.month, now.day,now.hour, now.minute]
   db[mem_id]["name"] = mem_name
 
   show = show_time(db[mem_id]["m_all_time"])
@@ -278,6 +278,16 @@ async def _study_time(ctx:SlashContext):
     await ctx.send("Học trên 1 giờ:"+tam[2])
     await ctx.send("Tổng số giờ học cả server: "+str(db["server_study_time"]["h_all_time"])+" giờ,"+str(db["server_study_time"]["m_all_time"])+"phút")
 
+
+@bot.command(name="print",description="Kiểm tra số giờ đã học")
+async def _learn_time(ctx):
+  take1 = take_data(str(ctx.author.id))
+  print(take1)
+  await ctx.send("```"+str(take1)+"```")
+
+  take2 = take_data("server_study_time")
+  print(take2)
+  await ctx.send("```"+str(take2)+"```")
 
 load_dotenv()
 my_secret = os.environ['BOT_TOKEN']

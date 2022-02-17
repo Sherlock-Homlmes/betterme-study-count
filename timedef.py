@@ -85,7 +85,7 @@ def time_down(time_value):
   wait_seconds = (time_value - past_hour).seconds   
   return minute(wait_seconds)
 
-#time per hour
+#user time per hour
 def time_per_hour(time1,time2,time_val):
 
   hour1 = time1.hour
@@ -110,6 +110,31 @@ def time_per_hour(time1,time2,time_val):
 
   return time_val
 
+#time per day
+def server_time_per_hour(time1, time2, time_val):
+  hour1 = time1.hour
+  hour2 = time2.hour
+
+  if hour1 == hour2:
+    time_del = time2 - time1
+    time_del = time_del.seconds
+    time_val[hour1] += minute(time_del)
+  else:
+    if hour2 == 0 and time2.minute == 0:
+      for i in range(hour1+1,24):
+        time_val[i] += 60
+
+      time_val[hour1] += time_up(time1)
+    else:
+      for i in range(hour1+1,hour2):
+        time_val[i] += 60
+
+      time_val[hour1] += time_up(time1)
+      time_val[hour2] += time_down(time2)
+
+  return time_val
+
+
 
 #time per day
 def time_per_day(member_id, time1, time2):
@@ -124,23 +149,43 @@ def time_per_day(member_id, time1, time2):
     cre_data(member_id)
     udb = take_data(member_id)
 
-  if time1.day != time2.day:
-    udb = cre_new_day(udb,time1)
-    udb = cre_new_day(udb,time2)
+  if member_id == "server_study_time":
+    if time1.day != time2.day:
+      udb = cre_new_day(udb,time1)
+      udb = cre_new_day(udb,time2)
 
-    mid9 = time2.replace(minute=0,hour=0)
+      mid9 = time2.replace(minute=0,hour=0)
 
-    udb[str(time1.year)][str(time1.month)][str(time1.day)] = time_per_hour(time1,mid9,udb[str(time1.year)][str(time1.month)][str(time1.day)])
-    udb[str(time2.year)][str(time2.month)][str(time2.day)] = time_per_hour(mid9,time2,udb[str(time2.year)][str(time2.month)][str(time2.day)])
+      udb[str(time1.year)][str(time1.month)][str(time1.day)] = server_time_per_hour(time1,mid9,udb[str(time1.year)][str(time1.month)][str(time1.day)])
+      udb[str(time2.year)][str(time2.month)][str(time2.day)] = server_time_per_hour(mid9,time2,udb[str(time2.year)][str(time2.month)][str(time2.day)])
 
+
+    else:
+      udb = cre_new_day(udb,time1)
+
+      udb[str(time1.year)][str(time1.month)][str(time1.day)] = server_time_per_hour(time1,time2,udb[str(time1.year)][str(time1.month)][str(time1.day)])
 
   else:
-    udb = cre_new_day(udb,time1)
+    if time1.day != time2.day:
+      udb = cre_new_day(udb,time1)
+      udb = cre_new_day(udb,time2)
 
-    udb[str(time1.year)][str(time1.month)][str(time1.day)] = time_per_hour(time1,time2,udb[str(time1.year)][str(time1.month)][str(time1.day)])
+      mid9 = time2.replace(minute=0,hour=0)
+
+      udb[str(time1.year)][str(time1.month)][str(time1.day)] = time_per_hour(time1,mid9,udb[str(time1.year)][str(time1.month)][str(time1.day)])
+      udb[str(time2.year)][str(time2.month)][str(time2.day)] = time_per_hour(mid9,time2,udb[str(time2.year)][str(time2.month)][str(time2.day)])
+
+
+    else:
+      udb = cre_new_day(udb,time1)
+
+      udb[str(time1.year)][str(time1.month)][str(time1.day)] = time_per_hour(time1,time2,udb[str(time1.year)][str(time1.month)][str(time1.day)])
 
 
   update_data(member_id,udb)
+
+
+
 
 #time in day
 def time_in_day(member_id):
