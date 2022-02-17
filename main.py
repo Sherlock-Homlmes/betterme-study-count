@@ -282,11 +282,9 @@ async def _study_time(ctx:SlashContext):
 @bot.command(name="print",description="Kiểm tra số giờ đã học")
 async def _learn_time(ctx):
   take1 = take_data(str(ctx.author.id))
-  print(take1)
   await ctx.send("```"+str(take1)+"```")
 
   take2 = take_data("server_study_time")
-  print(take2)
   await ctx.send("```"+str(take2)+"```")
 
 load_dotenv()
