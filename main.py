@@ -279,6 +279,98 @@ async def _study_time(ctx:SlashContext):
     await ctx.send("Học trên 1 giờ:"+tam[2])
     await ctx.send("Tổng số giờ học cả server: "+str(db["server_study_time"]["h_all_time"])+" giờ,"+str(db["server_study_time"]["m_all_time"])+"phút")
 
+#hstc
+@bot.command(name = "hstc",description = "mua role hstc")
+async def _hstc(ctx):
+
+  hstc = ctx.guild.get_role(882810506824515615)
+
+  if hstc in ctx.author.roles:
+    await ctx.send("Bạn đã có role HSTC")
+  elif db[str(ctx.author.id)]["m_all_time"] >= 12000:
+
+    message = await ctx.send("Xác nhận mua role(200 coins)\nNếu không xác nhận sau 30 giây, giao dịch sẽ bị hủy bỏ")
+
+    await message.add_reaction('✅')
+    await message.add_reaction('❌')
+
+    try:
+      reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: user == ctx.author and reaction.emoji in ['✅','❌'],timeout = 30.0)
+
+      if reaction.emoji == '❌':
+        await ctx.send("Giao dịch đã bị hủy bỏ")
+      elif reaction.emoji == '✅':
+
+        from transfer_history_database import cre_tdb, take_tdb, update_tdb
+
+        his = take_tdb(str(ctx.author.id))
+        if his != None:
+          his["Mua role HSTC"] = 200
+        else:
+          cre_tdb(str(ctx.author.id))
+          his["Mua role HSTC"] = 200
+        update_tdb(str(ctx.author.id),his)
+
+
+        await ctx.author.add_roles(hstc)
+        await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
+
+    except:
+      await ctx.send("Giao dịch đã bị hủy bỏ")
+
+
+  else:
+    await ctx.send("Bạn cần ít nhất 200 coin(tương đương với 200 giờ học để mua role HSTC")
+    
+#hstc
+#study time
+@slash.slash(
+  name="hstc",
+  description="hstc",
+  guild_ids=guild_ids,
+  )
+async def _hstc(ctx:SlashContext):
+
+  hstc = ctx.guild.get_role(882810506824515615)
+
+  if hstc in ctx.author.roles:
+    await ctx.send("Bạn đã có role HSTC")
+  elif db[str(ctx.author.id)]["m_all_time"] >= 12000:
+
+    message = await ctx.send("Xác nhận mua role(200 coins)\nNếu không xác nhận sau 30 giây, giao dịch sẽ bị hủy bỏ")
+
+    await message.add_reaction('✅')
+    await message.add_reaction('❌')
+
+    try:
+      reaction, user = await bot.wait_for('reaction_add', check=lambda reaction, user: user == ctx.author and reaction.emoji in ['✅','❌'],timeout = 30.0)
+
+      if reaction.emoji == '❌':
+        await ctx.send("Giao dịch đã bị hủy bỏ")
+      elif reaction.emoji == '✅':
+
+        from transfer_history_database import cre_tdb, take_tdb, update_tdb
+
+        his = take_tdb(str(ctx.author.id))
+        if his != None:
+          his["Mua role HSTC"] = 200
+        else:
+          cre_tdb(str(ctx.author.id))
+          his["Mua role HSTC"] = 200
+        update_tdb(str(ctx.author.id),his)
+
+
+        await ctx.author.add_roles(hstc)
+        await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
+
+    except:
+      await ctx.send("Giao dịch đã bị hủy bỏ")
+
+
+  else:
+    await ctx.send("Bạn cần ít nhất 200 coin(tương đương với 200 giờ học để mua role HSTC")
+  
+
 
 @bot.command(name="print",description="Kiểm tra số giờ đã học")
 async def _learn_time(ctx):
