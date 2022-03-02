@@ -352,7 +352,7 @@ async def _hstc(ctx:SlashContext):
         from transfer_history_database import cre_tdb, take_tdb, update_tdb
 
         his = take_tdb(str(ctx.author.id))
-        if his != None:
+        if his != False:
           his["Mua role HSTC"] = 200
         else:
           cre_tdb(str(ctx.author.id))
