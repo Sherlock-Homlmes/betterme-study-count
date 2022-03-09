@@ -304,7 +304,7 @@ async def _hstc(ctx):
         from transfer_history_database import cre_tdb, take_tdb, update_tdb
 
         his = take_tdb(str(ctx.author.id))
-        if his != None:
+        if his != False:
           his["Mua role HSTC"] = 200
         else:
           cre_tdb(str(ctx.author.id))
@@ -316,7 +316,7 @@ async def _hstc(ctx):
         await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
 
     except:
-      await ctx.send("Giao dịch đã bị hủy bỏ")
+      await ctx.send("Có lỗi trong quá trình cấp role, hãy liên hệ với AD để giải quyết")
 
 
   else:
@@ -364,7 +364,7 @@ async def _hstc(ctx:SlashContext):
         await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
 
     except:
-      await ctx.send("Giao dịch đã bị hủy bỏ")
+      await ctx.send("Có lỗi trong quá trình cấp role, hãy liên hệ với AD để giải quyết")
 
 
   else:
