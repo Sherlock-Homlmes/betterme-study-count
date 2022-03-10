@@ -308,6 +308,7 @@ async def _hstc(ctx):
           his["Mua role HSTC"] = 200
         else:
           cre_tdb(str(ctx.author.id))
+          his = {}
           his["Mua role HSTC"] = 200
         update_tdb(str(ctx.author.id),his)
 
@@ -356,6 +357,7 @@ async def _hstc(ctx:SlashContext):
           his["Mua role HSTC"] = 200
         else:
           cre_tdb(str(ctx.author.id))
+          his = {}
           his["Mua role HSTC"] = 200
         update_tdb(str(ctx.author.id),his)
 
