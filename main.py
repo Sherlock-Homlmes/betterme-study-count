@@ -317,7 +317,7 @@ async def _hstc(ctx):
         await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
 
     except:
-      await ctx.send("Có lỗi trong quá trình cấp role, hãy liên hệ với AD để giải quyết")
+      await ctx.send("Giao dịch đã bị hủy bỏ")
 
 
   else:
@@ -366,7 +366,7 @@ async def _hstc(ctx:SlashContext):
         await ctx.send("Chúc mừng {} đã có role HSTC".format(ctx.author.mention))
 
     except:
-      await ctx.send("Có lỗi trong quá trình cấp role, hãy liên hệ với AD để giải quyết")
+      await ctx.send("Giao dịch đã bị hủy bỏ")
 
 
   else:
